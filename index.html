@@ -38,14 +38,19 @@
         <option value="dividend">Cobro (dividendo/renta)</option>
       </select>
       <input type="date" id="f-date" required>
+      <select id="f-asset"><option value="stock">Acción</option><option value="option">Opción</option></select>
       <input id="f-ticker" placeholder="Ticker (ej. GGAL)">
       <input type="number" id="f-qty" step="any" placeholder="Cantidad">
       <input type="number" id="f-price" step="any" placeholder="Precio">
       <input type="number" id="f-amount" step="any" placeholder="Monto">
-      <input type="number" id="f-fee" step="any" placeholder="Comisión (opc.)">
+      <input type="number" id="f-fee" step="any" placeholder="Comisión (auto si vacío)">
       <button type="submit">Agregar</button>
     </form>
     <p class="hint" id="form-hint"></p>
+    <div class="rates">
+      <label>Comisión acciones % <input type="number" step="any" id="rate-stock"></label>
+      <label>Comisión opciones % <input type="number" step="any" id="rate-option"></label>
+    </div>
   </section>
 
   <section class="panel">

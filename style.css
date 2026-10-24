@@ -22,3 +22,4 @@ th:first-child,td:first-child{text-align:left}th{color:var(--muted);font-weight:
 td input{width:90px;padding:4px 6px;text-align:right}
 td button{padding:2px 8px;background:transparent;color:var(--neg);border-color:var(--line)}
 footer{text-align:center;color:var(--muted);font-size:12px;padding:16px}
+.rates{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;color:var(--muted);font-size:13px}.rates input{width:90px;margin-left:6px}

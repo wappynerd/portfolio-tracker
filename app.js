@@ -1,7 +1,7 @@
 const KEY = "portfolio-tracker-v1";
 const TYPES = { deposit: "Depósito", withdraw: "Retiro", buy: "Compra", sell: "Venta", dividend: "Cobro" };
 const $ = id => document.getElementById(id);
-const DEFAULTS = () => ({ txs: [], prices: {}, snapshots: [], currency: "USD" });
+const DEFAULTS = () => ({ txs: [], prices: {}, snapshots: [], currency: "USD", rates: { stock: 0.088, option: 0.15 } });
 
 let state = load();
 let chart;
@@ -64,6 +64,8 @@ function snapshot() {
 
 function render() {
   $("currency").value = state.currency;
+  $("rate-stock").value = state.rates.stock;
+  $("rate-option").value = state.rates.option;
   const r = compute();
   const mv = marketValue(r);
   const invested = Object.values(r.pos).reduce((s, x) => s + x.cost, 0);
@@ -102,7 +104,7 @@ function render() {
   $("txs").innerHTML = `<tr><th>Fecha</th><th>Tipo</th><th>Ticker</th><th>Cantidad</th><th>Precio</th><th>Monto</th><th>Comisión</th><th></th></tr>` +
     (txs.map(t => {
       const amount = t.type === "buy" || t.type === "sell" ? t.qty * t.price : t.amount;
-      return `<tr><td>${t.date}</td><td>${TYPES[t.type]}</td><td>${esc(t.ticker || "")}</td>
+      return `<tr><td>${t.date}</td><td>${TYPES[t.type]}</td><td>${esc(t.ticker || "")}${t.asset === "option" ? " (opc.)" : ""}</td>
         <td>${t.qty ? fmt(t.qty, 4) : ""}</td><td>${t.price ? fmt(t.price) : ""}</td>
         <td>${fmt(amount)}</td><td>${t.fee ? fmt(t.fee) : ""}</td>
         <td><button data-del="${t.id}">✕</button></td></tr>`;
@@ -133,6 +135,7 @@ function syncForm() {
   const t = $("f-type").value;
   const trade = t === "buy" || t === "sell";
   $("f-ticker").hidden = !(trade || t === "dividend");
+  $("f-asset").hidden = !trade;
   $("f-qty").hidden = $("f-price").hidden = $("f-fee").hidden = !trade;
   $("f-amount").hidden = trade;
   $("form-hint").textContent = trade
@@ -153,7 +156,10 @@ $("form").onsubmit = e => {
     ticker: $("f-ticker").value.trim().toUpperCase(),
     qty: num($("f-qty").value), price: num($("f-price").value),
     amount: num($("f-amount").value), fee: num($("f-fee").value),
+    asset: $("f-asset").value,
   };
+  // Comisión automática: % del monto operado según tipo de activo
+  if (trade && !$("f-fee").value) t.fee = t.qty * t.price * (state.rates[t.asset] / 100);
   if (trade && (!t.ticker || t.qty <= 0 || t.price <= 0)) return alert("Completá ticker, cantidad y precio.");
   if (!trade && t.amount <= 0) return alert("Completá el monto.");
   if (type === "dividend" && !t.ticker) return alert("Completá el ticker que pagó.");
@@ -183,6 +189,10 @@ document.addEventListener("change", e => {
   if (v > 0) state.prices[tk] = v; else delete state.prices[tk];
   save(); snapshot(); render();
 });
+
+for (const k of ["stock", "option"]) {
+  $("rate-" + k).onchange = e => { state.rates[k] = num(e.target.value); save(); };
+}
 
 $("currency").onchange = e => { state.currency = e.target.value; save(); render(); };
 
