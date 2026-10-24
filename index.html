@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portfolio Tracker</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+<body>
+<header>
+  <h1>Portfolio Tracker</h1>
+  <div class="actions">
+    <select id="currency" title="Moneda"><option>USD</option><option>ARS</option></select>
+    <button id="btn-prices">Actualizar precios</button>
+    <button id="btn-export" class="ghost">Exportar</button>
+    <label class="ghost btn">Importar<input type="file" id="file-import" accept=".json" hidden></label>
+  </div>
+</header>
+
+<main>
+  <section class="cards" id="cards"></section>
+
+  <section class="panel">
+    <h2>Evolución</h2>
+    <canvas id="chart" height="110"></canvas>
+    <p class="hint">El valor de mercado se registra cada vez que actualizás los precios (una vez por día). Capital depositado e invertido se calculan desde tus movimientos.</p>
+  </section>
+
+  <section class="panel">
+    <h2>Nuevo movimiento</h2>
+    <form id="form">
+      <select id="f-type">
+        <option value="deposit">Depósito</option>
+        <option value="withdraw">Retiro</option>
+        <option value="buy">Compra</option>
+        <option value="sell">Venta</option>
+        <option value="dividend">Cobro (dividendo/renta)</option>
+      </select>
+      <input type="date" id="f-date" required>
+      <input id="f-ticker" placeholder="Ticker (ej. GGAL)">
+      <input type="number" id="f-qty" step="any" placeholder="Cantidad">
+      <input type="number" id="f-price" step="any" placeholder="Precio">
+      <input type="number" id="f-amount" step="any" placeholder="Monto">
+      <input type="number" id="f-fee" step="any" placeholder="Comisión (opc.)">
+      <button type="submit">Agregar</button>
+    </form>
+    <p class="hint" id="form-hint"></p>
+  </section>
+
+  <section class="panel">
+    <h2>Posiciones</h2>
+    <div class="scroll"><table id="holdings"></table></div>
+  </section>
+
+  <section class="panel">
+    <h2>Movimientos</h2>
+    <div class="scroll"><table id="txs"></table></div>
+  </section>
+</main>
+<footer>Los datos se guardan solo en este navegador (localStorage). Usá Exportar para hacer backup.</footer>
+<script src="app.js"></script>
+</body>
+</html>
